@@ -1,3 +1,4 @@
+```
  @@@@@@   @@@@@@   @@@  @@@   @@@@@@@
 @@@@@@@   @@@@@@@  @@@@ @@@  @@@@@@@@
 !@@           @@@  @@!@!@@@  !@@
@@ -37,3 +38,5 @@ Usage: s3nc.rb [options] SRC DST
 * https://github.com/grosser/parallel
 
     $ gem install aws parallel
+    
+```
