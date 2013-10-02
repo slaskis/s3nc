@@ -1,24 +1,24 @@
 #!/usr/bin/env ruby
-# 
+#
 #  @@@@@@   @@@@@@   @@@  @@@   @@@@@@@
 # @@@@@@@   @@@@@@@  @@@@ @@@  @@@@@@@@
-# !@@           @@@  @@!@!@@@  !@@     
-# !@!           @!@  !@!!@!@!  !@!     
-# !!@@!!    @!@!!@   @!@ !!@!  !@!     
-#  !!@!!!   !!@!@!   !@!  !!!  !!!     
-#      !:!      !!:  !!:  !!!  :!!     
-#     !:!       :!:  :!:  !:!  :!:     
+# !@@           @@@  @@!@!@@@  !@@
+# !@!           @!@  !@!!@!@!  !@!
+# !!@@!!    @!@!!@   @!@ !!@!  !@!
+#  !!@!!!   !!@!@!   !@!  !!!  !!!
+#      !:!      !!:  !!:  !!!  :!!
+#     !:!       :!:  :!:  !:!  :!:
 # :::: ::   :: ::::   ::   ::   ::: :::
 # :: : :     : : :   ::    :    :: :: :
-# 
+#
 # Command line tool to synchronize two buckets by copying all modified objects
-# from one bucket to another in parallel for blazing speed (or around 300 
+# from one bucket to another in parallel for blazing speed (or around 300
 # objects/s on my machine using 100 threads).
-# 
+#
 # Usage: s3nc.rb [options] SRC DST
 #     -n, --threads NUMBER             Use NUMBER of threads to copy (default 20)
 #     -p, --prefix PREFIX              Copy objects prefixed with PREFIX (default "")
-#     -a, --act ACL                    Copy objects with ACL [private,public-read,public-read-write,authenticated-read,bucket-owner-read,bucket-owner-full-control] (default public-read)
+#     -a, --acl ACL                    Copy objects with ACL [private,public-read,public-read-write,authenticated-read,bucket-owner-read,bucket-owner-full-control] (default public-read)
 #     -k, --key KEY                    Set Amazon Access KEY (default ENV['S3_KEY'])
 #     -s, --secret SECRET              Sets the Amazon Access SECRET (default ENV['S3_SECRET'])
 #     -u, --unsafe                     Use http (fast) instead of https (secure)
@@ -26,10 +26,10 @@
 #     -c, --create                     Create the destination bucket if it does not already exist
 #     -y, --yes                        Don't ask to continue (useful for cron-jobs)
 #     -q, --quieter                    Not interested in the progress
-# 
+#
 # Examples:
 #
-#   $ s3nc myfrombucket mytobucket 
+#   $ s3nc myfrombucket mytobucket
 #
 #   $ s3nc -n 100 myfrombucket mytobucket
 #
@@ -63,16 +63,16 @@ options = {
 
 AMAZON_ACL = %w{private public-read public-read-write authenticated-read bucket-owner-read bucket-owner-full-control}
 
-puts ''                                       
-puts ' @@@@@@   @@@@@@   @@@  @@@   @@@@@@@'  
-puts '@@@@@@@   @@@@@@@  @@@@ @@@  @@@@@@@@'  
-puts '!@@           @@@  @@!@!@@@  !@@     '  
-puts '!@!           @!@  !@!!@!@!  !@!     '  
-puts '!!@@!!    @!@!!@   @!@ !!@!  !@!     '  
-puts ' !!@!!!   !!@!@!   !@!  !!!  !!!     '  
-puts '     !:!      !!:  !!:  !!!  :!!     '  
-puts '    !:!       :!:  :!:  !:!  :!:     '  
-puts ':::: ::   :: ::::   ::   ::   ::: :::'  
+puts ''
+puts ' @@@@@@   @@@@@@   @@@  @@@   @@@@@@@'
+puts '@@@@@@@   @@@@@@@  @@@@ @@@  @@@@@@@@'
+puts '!@@           @@@  @@!@!@@@  !@@     '
+puts '!@!           @!@  !@!!@!@!  !@!     '
+puts '!!@@!!    @!@!!@   @!@ !!@!  !@!     '
+puts ' !!@!!!   !!@!@!   !@!  !!!  !!!     '
+puts '     !:!      !!:  !!:  !!!  :!!     '
+puts '    !:!       :!:  :!:  !:!  :!:     '
+puts ':::: ::   :: ::::   ::   ::   ::: :::'
 puts ':: : :     : : :   ::    :    :: :: :'
 puts ''
 
@@ -87,7 +87,7 @@ opts = OptionParser.new do |opts|
     options[:prefix] = p
   end
 
-  opts.on("-a", "--act ACL", AMAZON_ACL, "Copy objects with ACL [#{AMAZON_ACL.join(',')}] (default #{options[:acl]})") do |acl|
+  opts.on("-a", "--acl ACL", AMAZON_ACL, "Copy objects with ACL [#{AMAZON_ACL.join(',')}] (default #{options[:acl]})") do |acl|
     options[:acl] = acl
   end
 
@@ -174,8 +174,8 @@ puts ''
 
 # Create S3 connection
 s3 = Aws::S3.new(options[:key],options[:secret],{
-  :port => options[:unsafe] ? 80 : 443, 
-  :protocol => options[:unsafe] ? 'http' : 'https', 
+  :port => options[:unsafe] ? 80 : 443,
+  :protocol => options[:unsafe] ? 'http' : 'https',
   :connection_mode => :per_thread,
   :logger => logger
 })
@@ -219,7 +219,7 @@ rescue Aws::AwsError => e
 end
 
 # Not needed anymore (new connections is in copy threads)
-s3.close_connection 
+s3.close_connection
 
 # Diff the two trees
 diff = src_map.reject {|key,obj| dst_map.has_key?(key) && dst_map[key].last_modified > obj.last_modified }
@@ -227,9 +227,9 @@ diff = src_map.reject {|key,obj| dst_map.has_key?(key) && dst_map[key].last_modi
 # No need to fire up more threads than objects
 options[:threads] = [diff.size,options[:threads]].min
 
-puts "Found #{src_map.size} source objects and #{dst_map.size} destination objects." 
+puts "Found #{src_map.size} source objects and #{dst_map.size} destination objects."
 unless diff.empty?
-  puts "#{diff.size} to copy using #{options[:threads]} threads." 
+  puts "#{diff.size} to copy using #{options[:threads]} threads."
 else
   puts 'Nothing to copy.'
 end
@@ -237,7 +237,7 @@ puts ''
 
 exit if diff.empty?
 
-# Prompt to continue (c), list the diff (l) or quit 
+# Prompt to continue (c), list the diff (l) or quit
 while options[:ask] do
   print 'Do you want to [c]ontinue, [l]ist the files to be copied or quit (any other key)? '
   case gets.chomp[0]
@@ -246,7 +246,7 @@ while options[:ask] do
   else
     puts "\n"
     puts 'Please come again!'
-    puts '' 
+    puts ''
     exit
   end
 end
